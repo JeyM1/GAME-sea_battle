@@ -36,15 +36,15 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
                        ap_data[y*FIELD_SIZE + (x-1+i)]     == SHIP ||
                        ap_data[(y+1)*FIELD_SIZE + x+i]     == SHIP ||
                        ap_data[(y+1)*FIELD_SIZE + (x+1+i)] == SHIP ||
-                       ap_data[(y+1)*FIELD_SIZE + (x-1+i)] == SHIP ||
+                       ap_data[(y+1)*FIELD_SIZE + (x-1+i)] == SHIP ||   //tut herna
                        ap_data[(y-1)*FIELD_SIZE + x+i]     == SHIP ||
                        ap_data[(y-1)*FIELD_SIZE + (x+1+i)] == SHIP ||
                        ap_data[(y-1)*FIELD_SIZE + (x-1+i)] == SHIP){
-                        if(x != 0 && x != FIELD_SIZE - ship_size){
+                        /*if(x != 0 && x != FIELD_SIZE - ship_size){
                             setting_possible = false;
                             break;
                         }else if((ap_data[y*FIELD_SIZE + x+ship_size] == SHIP && x == 0)                  ||             //слева/справа
-                                 (ap_data[y*FIELD_SIZE + x-1] == SHIP && x == FIELD_SIZE-ship_size)       ||  //сверху если слева
+                                 (ap_data[y*FIELD_SIZE + x-1] == SHIP && x == FIELD_SIZE-ship_size)       ||             //сверху если слева
                                  (ap_data[(y+1)*FIELD_SIZE + x + i] == SHIP && x == 0)                    ||
                                  (ap_data[(y+1)*FIELD_SIZE + x + ship_size + 1] == SHIP && x == 0)        ||
                                  (ap_data[(y-1)*FIELD_SIZE + x + i] == SHIP && x == 0)                    ||
@@ -55,7 +55,10 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
                                  (ap_data[(y-1)*FIELD_SIZE + x + i] == SHIP && x == FIELD_SIZE-ship_size)){
                             setting_possible = false;
                             break;
-                        }
+                        }*/
+                        printf("DEBUG: x=%d y=%d x+%d+1=%d data=%d\n", x, y, i, x+i+1,ap_data[y*FIELD_SIZE +x+i+1]);
+                        setting_possible = false;
+                        break;
                        }
                 }
                 break;
@@ -70,11 +73,26 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
                        ap_data[(y-1+i)*FIELD_SIZE + x]     == SHIP ||
                        ap_data[(y-1+i)*FIELD_SIZE + (x+1)] == SHIP ||
                        ap_data[(y-1+i)*FIELD_SIZE + (x-1)] == SHIP){
-                        setting_possible = false;       //сделать проверку подобную к х-ам
-                        break;
+                        /*if(y != 0 && y != FIELD_SIZE - ship_size){
+                            setting_possible = false;
+                            break;
+                        }else if((ap_data[(y+ship_size)*FIELD_SIZE + x] == SHIP && y == 0)              ||
+                                 (ap_data[(y-1)*FIELD_SIZE + x] == SHIP && y == FIELD_SIZE-ship_size)    ||
+                                 (ap_data[(y+i)*FIELD_SIZE + x+1] == SHIP && y == 0)                    ||
+                                 (ap_data[(y+ship_size+1)*FIELD_SIZE + x+1] == SHIP && y == 0)          ||
+                                 (ap_data[(y+i)*FIELD_SIZE + x-1] == SHIP && y == 0)                    ||
+                                 (ap_data[(y+ship_size+1)*FIELD_SIZE + x-1] == SHIP && y == 0)          ||
+                                 (ap_data[(y-1)*FIELD_SIZE + x+1] == SHIP && y == FIELD_SIZE-ship_size) ||
+                                 (ap_data[(y+i)*FIELD_SIZE + x+1] == SHIP && y == FIELD_SIZE-ship_size) ||
+                                 (ap_data[(y-1)*FIELD_SIZE + x-1] == SHIP && y == FIELD_SIZE-ship_size) ||
+                                 (ap_data[(y+i)*FIELD_SIZE + x-1] == SHIP && y == FIELD_SIZE-ship_size)){
+                            setting_possible = false;
+                            break;
+                        }*/
+                       setting_possible = false;
+                       break;
                        }
                 }
-
             }
             if(setting_possible){
                 switch(dir)

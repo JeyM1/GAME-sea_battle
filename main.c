@@ -39,12 +39,12 @@ int main(void){
     //slowprint(100, "version 0.2");
     /*Sleep(1000);
     system("cls");*/
-    if((logs = fopen(LOG_FILE, "w")) == NULL){
+    /*if((logs = fopen(LOG_FILE, "w")) == NULL){
         char choice;
         fprintf(stderr, "Error in opening %s file. Continue? (y/n)\n", LOG_FILE);
         if((choice = getchar()) == 'n')
             exit(EXIT_FAILURE);
-    }
+    }*/
     while(!gameover){           //меню, установка кораблей, выбор игры
         switch(game_state){
             case INIT: //init game data

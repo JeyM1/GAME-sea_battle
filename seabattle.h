@@ -29,7 +29,7 @@
 
 typedef enum {EMPTY=0, SHOT, HIT, KILL, SHIP, EFIELDINFO_END}eFieldInfo;
 typedef enum {INIT=0, DRAW, PROCESSING, EXIT}eGameState;
-typedef enum {MAIN_MENU=0, SETTINGS, CONTROLS, GAME_EXIT, GAME_SETTINGS}eMenuState;
+typedef enum {MAIN_MENU=0, SETTINGS, CONTROLS, GAME_EXIT, M_MENU_END, GAME_SETTINGS}eMenuState;
 
 //-------------------------------------------------------------------------------------------------
 //-------------RENDERING FUNCTIONS-----------------------------------------------------------------
@@ -59,4 +59,5 @@ void clearData(eFieldInfo *, eFieldInfo *, eFieldInfo *, eFieldInfo *);
 
 int main_UI(eMenuState *);
 int main_menu(void);
-int get_menu_pos(int *);
+int get_menu_pos(int *, int);
+bool choice_yes_no(char *string);
