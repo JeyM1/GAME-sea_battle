@@ -18,7 +18,7 @@
 #define KEY_DOWN          80
 #define KEY_RIGHT         77
 #define KEY_LEFT          75
-#define KEY_SWITCH_DIR    100
+#define KEY_SWITCH_DIR    32
 
 #define TARGET_ICON '+'
 
@@ -29,7 +29,7 @@
 
 typedef enum {EMPTY=0, SHOT, HIT, KILL, SHIP, EFIELDINFO_END}eFieldInfo;
 typedef enum {INIT=0, DRAW, PROCESSING, EXIT}eGameState;
-typedef enum {MAIN_MENU=0, SETTINGS, CONTROLS, GAME_EXIT, M_MENU_END, GAME_SETTINGS}eMenuState;
+typedef enum {MAIN_MENU=0, SETTINGS, CONTROLS, GAME_EXIT, M_MENU_END, GAME_SETTINGS, IN_GAME}eMenuState;
 
 //-------------------------------------------------------------------------------------------------
 //-------------RENDERING FUNCTIONS-----------------------------------------------------------------
@@ -38,7 +38,7 @@ typedef enum {MAIN_MENU=0, SETTINGS, CONTROLS, GAME_EXIT, M_MENU_END, GAME_SETTI
 void introducing();
 void draw_ship_setup_field(eFieldInfo *, unsigned short, int, int);
 void drawfield(eFieldInfo *, eFieldInfo *, unsigned short);
-void slowprint(int speed, char *text);
+void slowprint(int, char *);
 
 
 //-------------------------------------------------------------------------------------------------
@@ -57,7 +57,8 @@ void clearData(eFieldInfo *, eFieldInfo *, eFieldInfo *, eFieldInfo *);
 //---------------------------------MENU------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-int main_UI(eMenuState *);
+void main_UI(eMenuState *, eGameState *, unsigned short *);
 int main_menu(void);
 int get_menu_pos(int *, int);
-bool choice_yes_no(char *string);
+bool choice_yes_no(char *);
+int set_game_settings();

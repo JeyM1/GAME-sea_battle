@@ -15,6 +15,8 @@ const char draw_icons[EFIELDINFO_END] =
 int player1_ship_count;
 int player2_ship_count;
 int player = PLAYER_1;
+eFieldInfo player1_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};   //плохо, по возможности перенести в локал.
+eFieldInfo player2_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};
 
 FILE *logs;
 
@@ -22,16 +24,16 @@ FILE *logs;
 
 //-----------------------------------------------------------------------------
 int main(void){
-    eGameState game_state = INIT;
     unsigned short shot_pos = 0;
 
-    eFieldInfo player1_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};
+    //eFieldInfo player1_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};
     eFieldInfo player1_shot_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};
-    eFieldInfo player2_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};
+    //eFieldInfo player2_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};
     eFieldInfo player2_shot_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};
     eFieldInfo *temp;
     eFieldInfo *shot_temp;
 
+    eGameState game_state = INIT;
     eMenuState menu_state = MAIN_MENU;
 
     //-------------------------------------------------
@@ -49,13 +51,12 @@ int main(void){
         switch(game_state){
             case INIT: //init game data
                 {
-                    main_UI(&menu_state);
-                    ship_generate_Player(player1_data, &player1_ship_count);
-                    //ship_generateAI(player1_data, &player1_ship_count); //if player1mode set to AI
-                    //Sleep(1000); //srand(time!!!)
-                    ship_generateAI(player2_data, &player2_ship_count); //if player2mode set to AI
-                    game_state = DRAW;
-                    //system("pause");
+                    player1_ship_count = 0;
+                    player2_ship_count = 0;
+                    player = PLAYER_1;
+
+                    clearData(player1_data, player2_data, player1_shot_data, player2_shot_data);
+                    main_UI(&menu_state, &game_state, NULL);
                     break;
                 }
             case DRAW: //drawing and entering data
@@ -72,13 +73,23 @@ int main(void){
                     }
                     drawfield(temp, shot_temp, shot_pos);
 
-                    if(get_target_pos(&shot_pos, FIELD_SIZE-1, FIELD_SIZE-1) == 1){  //координаты прицела
+                    main_UI(&menu_state, &game_state, &shot_pos);
+
+                    if(get_target_pos(&shot_pos, FIELD_SIZE-1, FIELD_SIZE) == 1){  //координаты прицела
                         game_state = PROCESSING;
                     }
                     break;
                 }
             case PROCESSING: //processing data
                 {
+                    if((shot_pos >> 8) == FIELD_SIZE){
+                        game_state = DRAW;
+                        if(choice_yes_no("Back to menu?\n")){
+                            game_state = INIT;
+                            menu_state = MAIN_MENU;
+                        }
+                        break;
+                    }
                     temp = (player == PLAYER_1) ? player2_data : player1_data;
                     if(shot_analyze(shot_pos, temp, shot_temp) == 0){       //procesing who is shooting? if hit -
                         player = ~player;
@@ -92,13 +103,12 @@ int main(void){
                 }
             case EXIT:
                 {
-                    char choice;
                     //system("cls");
                     printf("Congratulations! Player %d won!\n", player == PLAYER_1 ? 1 : 2);
-                    printf("Exit game? (y/n)\n");
-                    if((choice = getchar()) == 'n'){
+                    Sleep(2000);
+                    if(choice_yes_no("Back to menu?\n")){
                         game_state = INIT;
-                        clearData(player1_data, player2_data, player1_shot_data, player2_shot_data);
+                        menu_state = MAIN_MENU;
                         break;
                     }
                     printf("Goodbye! :) \n");
@@ -107,6 +117,6 @@ int main(void){
                 }
         }
     }
-    //MessageBox(NULL, "End of program", "END", MB_OK | MB_ICONEXCLAMATION);
+    Sleep(1000);
     return 0;
 }
