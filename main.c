@@ -37,8 +37,8 @@ int main(void){
     eMenuState menu_state = MAIN_MENU;
 
     //-------------------------------------------------
-    //introducing();
-    //slowprint(100, "version 0.2");
+    introducing();
+    slowprint(100, "version 1.0");
     /*Sleep(1000);
     system("cls");*/
     /*if((logs = fopen(LOG_FILE, "w")) == NULL){
@@ -83,16 +83,23 @@ int main(void){
             case PROCESSING: //processing data
                 {
                     if((shot_pos >> 8) == FIELD_SIZE){
-                        game_state = DRAW;
-                        if(choice_yes_no("Back to menu?\n")){
-                            game_state = INIT;
-                            menu_state = MAIN_MENU;
+                        if(shot_pos%2 == 0)
+                            if(choice_yes_no("Back to menu?\n")){
+                                game_state = INIT;
+                                menu_state = MAIN_MENU;
+                            }else game_state = DRAW;
+                        else if(shot_pos%2 == 1){
+                            show_controls();
+                            game_state = DRAW;
                         }
                         break;
                     }
                     temp = (player == PLAYER_1) ? player2_data : player1_data;
                     if(shot_analyze(shot_pos, temp, shot_temp) == 0){       //procesing who is shooting? if hit -
                         player = ~player;
+                        /*slowprint(10, "Player ");
+                        printf("%c", player == PLAYER_1 ? '1' : '2');
+                        slowprint(10, " your turn!");*/
                     }
                     if(player1_ship_count == 0 || player2_ship_count == 0){
                         game_state = EXIT;

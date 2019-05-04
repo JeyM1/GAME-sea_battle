@@ -31,32 +31,15 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
             {
             case 0:
                 for(int i=0; i<ship_size; i++){
-                    if(ap_data[y*FIELD_SIZE + x+i]         == SHIP ||
-                       ap_data[y*FIELD_SIZE + (x+1+i)]     == SHIP ||
-                       ap_data[y*FIELD_SIZE + (x-1+i)]     == SHIP ||
-                       ap_data[(y+1)*FIELD_SIZE + x+i]     == SHIP ||
-                       ap_data[(y+1)*FIELD_SIZE + (x+1+i)] == SHIP ||
-                       ap_data[(y+1)*FIELD_SIZE + (x-1+i)] == SHIP ||   //tut herna
-                       ap_data[(y-1)*FIELD_SIZE + x+i]     == SHIP ||
-                       ap_data[(y-1)*FIELD_SIZE + (x+1+i)] == SHIP ||
-                       ap_data[(y-1)*FIELD_SIZE + (x-1+i)] == SHIP){
-                        /*if(x != 0 && x != FIELD_SIZE - ship_size){
-                            setting_possible = false;
-                            break;
-                        }else if((ap_data[y*FIELD_SIZE + x+ship_size] == SHIP && x == 0)                  ||             //слева/справа
-                                 (ap_data[y*FIELD_SIZE + x-1] == SHIP && x == FIELD_SIZE-ship_size)       ||             //сверху если слева
-                                 (ap_data[(y+1)*FIELD_SIZE + x + i] == SHIP && x == 0)                    ||
-                                 (ap_data[(y+1)*FIELD_SIZE + x + ship_size + 1] == SHIP && x == 0)        ||
-                                 (ap_data[(y-1)*FIELD_SIZE + x + i] == SHIP && x == 0)                    ||
-                                 (ap_data[(y-1)*FIELD_SIZE + x + ship_size + 1] == SHIP && x == 0)        ||
-                                 (ap_data[(y+1)*FIELD_SIZE + x - 1] == SHIP && x == FIELD_SIZE-ship_size) ||
-                                 (ap_data[(y+1)*FIELD_SIZE + x + i] == SHIP && x == FIELD_SIZE-ship_size) ||
-                                 (ap_data[(y-1)*FIELD_SIZE + x - 1] == SHIP && x == FIELD_SIZE-ship_size) ||
-                                 (ap_data[(y-1)*FIELD_SIZE + x + i] == SHIP && x == FIELD_SIZE-ship_size)){
-                            setting_possible = false;
-                            break;
-                        }*/
-                        printf("DEBUG: x=%d y=%d x+%d+1=%d data=%d\n", x, y, i, x+i+1,ap_data[y*FIELD_SIZE +x+i+1]);
+                    if(ap_data[y*FIELD_SIZE + x+i]                  == SHIP                            ||
+                       (ap_data[y*FIELD_SIZE + (x+ship_size)]       == SHIP && x!=FIELD_SIZE-ship_size)||
+                       (ap_data[y*FIELD_SIZE + (x-1)]               == SHIP && x!=0)                   ||
+                       ap_data[(y+1)*FIELD_SIZE + x+i]              == SHIP                            ||
+                       (ap_data[(y+1)*FIELD_SIZE + (x+ship_size)]   == SHIP && x!=FIELD_SIZE-ship_size)||
+                       (ap_data[(y+1)*FIELD_SIZE + (x-1)]           == SHIP && x!=0)                   ||
+                       ap_data[(y-1)*FIELD_SIZE + x+i]              == SHIP                            ||
+                       (ap_data[(y-1)*FIELD_SIZE + (x+ship_size)]   == SHIP && x!=FIELD_SIZE-ship_size)||
+                       (ap_data[(y-1)*FIELD_SIZE + (x-1)]           == SHIP && x!=0)){
                         setting_possible = false;
                         break;
                        }
@@ -64,33 +47,18 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
                 break;
             case 1:
                 for(int i=0; i<ship_size; i++){
-                    if(ap_data[(y+i)*FIELD_SIZE + x]       == SHIP ||
-                       ap_data[(y+i)*FIELD_SIZE + (x+1)]   == SHIP ||
-                       ap_data[(y+i)*FIELD_SIZE + (x-1)]   == SHIP ||
-                       ap_data[(y+1+i)*FIELD_SIZE + x]     == SHIP ||
-                       ap_data[(y+1+i)*FIELD_SIZE + (x+1)] == SHIP ||
-                       ap_data[(y+1+i)*FIELD_SIZE + (x-1)] == SHIP ||
-                       ap_data[(y-1+i)*FIELD_SIZE + x]     == SHIP ||
-                       ap_data[(y-1+i)*FIELD_SIZE + (x+1)] == SHIP ||
-                       ap_data[(y-1+i)*FIELD_SIZE + (x-1)] == SHIP){
-                        /*if(y != 0 && y != FIELD_SIZE - ship_size){
-                            setting_possible = false;
-                            break;
-                        }else if((ap_data[(y+ship_size)*FIELD_SIZE + x] == SHIP && y == 0)              ||
-                                 (ap_data[(y-1)*FIELD_SIZE + x] == SHIP && y == FIELD_SIZE-ship_size)    ||
-                                 (ap_data[(y+i)*FIELD_SIZE + x+1] == SHIP && y == 0)                    ||
-                                 (ap_data[(y+ship_size+1)*FIELD_SIZE + x+1] == SHIP && y == 0)          ||
-                                 (ap_data[(y+i)*FIELD_SIZE + x-1] == SHIP && y == 0)                    ||
-                                 (ap_data[(y+ship_size+1)*FIELD_SIZE + x-1] == SHIP && y == 0)          ||
-                                 (ap_data[(y-1)*FIELD_SIZE + x+1] == SHIP && y == FIELD_SIZE-ship_size) ||
-                                 (ap_data[(y+i)*FIELD_SIZE + x+1] == SHIP && y == FIELD_SIZE-ship_size) ||
-                                 (ap_data[(y-1)*FIELD_SIZE + x-1] == SHIP && y == FIELD_SIZE-ship_size) ||
-                                 (ap_data[(y+i)*FIELD_SIZE + x-1] == SHIP && y == FIELD_SIZE-ship_size)){
-                            setting_possible = false;
-                            break;
-                        }*/
-                       setting_possible = false;
-                       break;
+                        //make as with x
+                    if(ap_data[(y+i)*FIELD_SIZE + x]               == SHIP                    ||
+                       (ap_data[(y+i)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1)||
+                       (ap_data[(y+i)*FIELD_SIZE + (x-1)]          == SHIP && x!=0)           ||
+                       ap_data[(y+ship_size)*FIELD_SIZE + x]       == SHIP                    ||
+                       (ap_data[(y+ship_size)*FIELD_SIZE + (x+1)]  == SHIP && x!=FIELD_SIZE-1)||
+                       (ap_data[(y+ship_size)*FIELD_SIZE + (x-1)]  == SHIP && x!=0)           ||
+                       ap_data[(y-1)*FIELD_SIZE + x]               == SHIP                    ||
+                       (ap_data[(y-1)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1)||
+                       (ap_data[(y-1)*FIELD_SIZE + (x-1)]          == SHIP && x!=0)){
+                        setting_possible = false;
+                        break;
                        }
                 }
             }
@@ -123,8 +91,8 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
                     break;
                 }
             }else{
-                printf("Sorry, could not place ship there. Maybe there are another ship(s) around placing ship\n");
-                //Sleep(3000); //Or maybe system("pause")?
+                printf("DEBUG: dir=%d\n", dir);
+                printf("Could not place ship there! Maybe there are another ship(s) around this one\n");
                 system("pause");
             }
 
@@ -282,21 +250,18 @@ int get_target_pos(unsigned short *pp_global, int max_dest_x, int max_dest_y){  
                     if(p_y > 0)
                         (p_y)--;
                     break;
-                    //return 0;
                 }
                 case KEY_LEFT:
                 {
                     if(p_x > 0)
                         (p_x)--;
                     break;
-                    //return 0;
                 }
                 case KEY_RIGHT:
                 {
                     if(p_x < max_dest_x)
                         (p_x)++;
                     break;
-                    //return 0;
                 }
             }
             break;

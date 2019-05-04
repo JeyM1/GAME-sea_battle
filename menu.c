@@ -39,6 +39,18 @@ int get_menu_pos(int *p_menu_pos, int step){
     return 0;
 }
 
+void show_controls(){
+    system("cls");
+    printf("=======CONTROLS=======\n");
+    printf("Key Up - Move Up\n");
+    printf("Key Down - Move Down\n");
+    printf("Key Left - Move Left\n");
+    printf("Key Right - Move Right\n");
+    printf("Enter - Shoot\n");
+    printf("Space - Change ship direction\n\n");
+    system("pause");
+}
+
 void main_UI(eMenuState *menu_state, eGameState *game_state, unsigned short *shot_pos){
     switch(*menu_state){
         case MAIN_MENU:
@@ -51,15 +63,7 @@ void main_UI(eMenuState *menu_state, eGameState *game_state, unsigned short *sho
             *menu_state = MAIN_MENU;
             break;
         case CONTROLS:
-            system("cls");
-            printf("=======CONTROLS=======\n");
-            printf("Key Up - Move Up\n");
-            printf("Key Down - Move Down\n");
-            printf("Key Left - Move Left\n");
-            printf("Key Right - Move Right\n");
-            printf("Enter - Shoot\n");
-            printf("Space - Change ship direction\n\n");
-            system("pause");
+            show_controls();
             *menu_state = MAIN_MENU;
             break;
         case GAME_EXIT:
@@ -79,7 +83,7 @@ void main_UI(eMenuState *menu_state, eGameState *game_state, unsigned short *sho
                 *menu_state = IN_GAME;
                 *game_state = DRAW;
             }else{
-                fprintf(stderr, "Sorry, something went wrong. Exiting..\n");
+                fprintf(stderr, "Something went wrong. Exiting..\n");
                 exit(EXIT_FAILURE);
             }
 
@@ -88,7 +92,8 @@ void main_UI(eMenuState *menu_state, eGameState *game_state, unsigned short *sho
             {
                 int x = *shot_pos;
                 int y = *shot_pos >> 8;
-                printf("\n %c Back to menu    \n", (y == FIELD_SIZE && x%2 == 0) ? TARGET_ICON : ' ');   //in-game UI, 'Show Controls', 'Back to Menu'
+                printf("\n %c Back to menu     %c Show Controls\n\n   Combatlog: ", (y == FIELD_SIZE && x%2 == 0) ? TARGET_ICON : ' ',
+                                                                    (y == FIELD_SIZE && x%2 == 1) ? TARGET_ICON : ' ');   //in-game UI, 'Show Controls', 'Back to Menu'
             }
         }
 }
