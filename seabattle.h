@@ -25,7 +25,13 @@
 #define PLAYER_1 0
 #define PLAYER_2 ~PLAYER_1
 
+#define SERVER 0
+#define CLIENT ~SERVER
+
 #define LOG_FILE "logs.txt"
+
+#define SERVER_PORT_NUM 80
+#define SERVER_MAX_CONNECTIONS 2
 
 typedef enum {EMPTY=0, SHOT, HIT, KILL, SHIP, EFIELDINFO_END}eFieldInfo;
 typedef enum {INIT=0, DRAW, PROCESSING, EXIT}eGameState;
@@ -62,3 +68,15 @@ int main_menu(void);
 int get_menu_pos(int *, int);
 bool choice_yes_no(char *);
 int set_game_settings();
+int set_field_settings(eFieldInfo*, int*);
+void show_controls();
+
+//-------------------------------------------------------------------------------------------------
+//---------------------------------NETWORK---------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
+void getSocketError();
+int init_server_socket();
+int init_client_socket(char*);
+
+

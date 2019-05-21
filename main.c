@@ -14,13 +14,17 @@ const char draw_icons[EFIELDINFO_END] =
 
 int player1_ship_count;
 int player2_ship_count;
-int player = PLAYER_1;
+int player = PLAYER_1; //player's turn (can be different)
+int net_player;  //defines SERVER or CLIENT playing; DONT CHANGE IT; SERVER = PLAYER_1, CLIENT = PLAYER_2
+
 eFieldInfo player1_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};   //плохо, по возможности перенести в локал.
 eFieldInfo player2_data[FIELD_SIZE*FIELD_SIZE] = {EMPTY};
 
 FILE *logs;
 
-
+SOCKET sHandleServer;               // socket file descriptor
+SOCKET newSHandle;                  // socket descriptor from accept
+SOCKET sHandleClient;
 
 //-----------------------------------------------------------------------------
 int main(void){
@@ -37,8 +41,8 @@ int main(void){
     eMenuState menu_state = MAIN_MENU;
 
     //-------------------------------------------------
-    introducing();
-    slowprint(100, "version 1.0");
+    //introducing();
+    //slowprint(100, "version 1.0");
     /*Sleep(1000);
     system("cls");*/
     /*if((logs = fopen(LOG_FILE, "w")) == NULL){
@@ -51,6 +55,9 @@ int main(void){
         switch(game_state){
             case INIT: //init game data
                 {
+                    if(sHandleClient) closesocket(sHandleClient);
+                    if(sHandleServer) closesocket(sHandleServer);
+                    if(newSHandle) closesocket(newSHandle);
                     player1_ship_count = 0;
                     player2_ship_count = 0;
                     player = PLAYER_1;
@@ -62,7 +69,7 @@ int main(void){
             case DRAW: //drawing and entering data
                 {
                     system("cls");
-                    if(player == PLAYER_1){
+                    if(net_player == SERVER){
                         printf("====================================\n               Player 1\n====================================\n");
                         temp = player1_data;
                         shot_temp = player1_shot_data;
@@ -75,10 +82,15 @@ int main(void){
 
                     main_UI(&menu_state, &game_state, &shot_pos);
 
-                    if(get_target_pos(&shot_pos, FIELD_SIZE-1, FIELD_SIZE) == 1){  //координаты прицела
+                    /*if(player == PLAYER_1 && net_player == SERVER){
+
+                    }else if(player == PLAYER_2 && net_player == CLIENT){
+
+                    }*/
+                    /*if(get_target_pos(&shot_pos, FIELD_SIZE-1, FIELD_SIZE) == 1){  //координаты прицела
                         game_state = PROCESSING;
                     }
-                    break;
+                    break;*/
                 }
             case PROCESSING: //processing data
                 {
@@ -94,7 +106,7 @@ int main(void){
                         }
                         break;
                     }
-                    temp = (player == PLAYER_1) ? player2_data : player1_data;
+                    temp = (net_player == SERVER) ? player2_data : player1_data;
                     if(shot_analyze(shot_pos, temp, shot_temp) == 0){       //procesing who is shooting? if hit -
                         player = ~player;
                         /*slowprint(10, "Player ");
@@ -118,6 +130,9 @@ int main(void){
                         menu_state = MAIN_MENU;
                         break;
                     }
+                    closesocket(sHandleClient);
+                    closesocket(sHandleServer);
+                    closesocket(newSHandle);
                     printf("Goodbye! :) \n");
                     gameover = true;
                     break;

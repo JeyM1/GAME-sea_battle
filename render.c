@@ -1,4 +1,3 @@
-//#include "render.h"
 #include "seabattle.h"
 
 extern const char draw_icons[EFIELDINFO_END];

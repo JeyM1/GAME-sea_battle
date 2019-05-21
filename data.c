@@ -26,9 +26,10 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
         x = pos;
         y = pos >> 8;
         if(temp == 1){
-            //проверка
+            //place check
             switch(dir)
             {
+            //x-direction
             case 0:
                 for(int i=0; i<ship_size; i++){
                     if(ap_data[y*FIELD_SIZE + x+i]                  == SHIP                            ||
@@ -45,18 +46,18 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
                        }
                 }
                 break;
+            //y-direction
             case 1:
                 for(int i=0; i<ship_size; i++){
-                        //make as with x
-                    if(ap_data[(y+i)*FIELD_SIZE + x]               == SHIP                    ||
-                       (ap_data[(y+i)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1)||
-                       (ap_data[(y+i)*FIELD_SIZE + (x-1)]          == SHIP && x!=0)           ||
-                       ap_data[(y+ship_size)*FIELD_SIZE + x]       == SHIP                    ||
-                       (ap_data[(y+ship_size)*FIELD_SIZE + (x+1)]  == SHIP && x!=FIELD_SIZE-1)||
-                       (ap_data[(y+ship_size)*FIELD_SIZE + (x-1)]  == SHIP && x!=0)           ||
-                       ap_data[(y-1)*FIELD_SIZE + x]               == SHIP                    ||
-                       (ap_data[(y-1)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1)||
-                       (ap_data[(y-1)*FIELD_SIZE + (x-1)]          == SHIP && x!=0)){
+                    if(ap_data[(y+i)*FIELD_SIZE + x]               == SHIP                                                 ||
+                       (ap_data[(y+i)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1)                             ||
+                       (ap_data[(y+i)*FIELD_SIZE + (x-1)]          == SHIP && x!=0)                                        ||
+                       (ap_data[(y+ship_size)*FIELD_SIZE + x]      == SHIP && y!=FIELD_SIZE-ship_size)                     ||
+                       (ap_data[(y+ship_size)*FIELD_SIZE + (x+1)]  == SHIP && x!=FIELD_SIZE-1 && y!=FIELD_SIZE-ship_size)  ||
+                       (ap_data[(y+ship_size)*FIELD_SIZE + (x-1)]  == SHIP && x!=0 && y!=FIELD_SIZE-ship_size)             ||
+                       (ap_data[(y-1)*FIELD_SIZE + x]              == SHIP && y!=0)                                        ||
+                       (ap_data[(y-1)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1 && y!=0)                     ||
+                       (ap_data[(y-1)*FIELD_SIZE + (x-1)]          == SHIP && x!=0 && y!=0)){
                         setting_possible = false;
                         break;
                        }
@@ -225,7 +226,7 @@ void ship_generateAI(eFieldInfo *ap_data, int *player_ship_count){
     *player_ship_count = ship_count+1;
 }
 //-----------------------------------------------------------------------------
-int get_target_pos(unsigned short *pp_global, int max_dest_x, int max_dest_y){       //unsigned char *pp_x, unsigned char *pp_y){
+int get_target_pos(unsigned short *pp_global, int max_dest_x, int max_dest_y){       //returns 0 if moved chair, 1 if pressed shot key, 2 if pressed destination key
     unsigned char p_x,p_y;
     p_x = *pp_global;
     p_y = *pp_global >> 8;
@@ -275,7 +276,7 @@ int get_target_pos(unsigned short *pp_global, int max_dest_x, int max_dest_y){  
     return 0;
 }
 //-----------------------------------------------------------------------------
-int shot_analyze(unsigned short position_global, eFieldInfo *field, eFieldInfo *shot_field){
+int shot_analyze(unsigned short position_global, eFieldInfo *field, eFieldInfo *shot_field){ //return 1 if turn not finished, 0 if finished
     unsigned char position_x = position_global;
     unsigned char position_y = position_global >> 8;
     int ship_size;
@@ -501,8 +502,6 @@ int kill_check(unsigned short position_global, eFieldInfo *field, eFieldInfo *sh
             }
         }
     }
-    /*printf("DEBUG: ship_size = %d\n",ship_size);
-    getchar();*/
     return ship_size;
 }
 //-----------------------------------------------------------------------------
