@@ -97,7 +97,7 @@ void main_UI(eMenuState *menu_state, eGameState *game_state, unsigned short *sho
                         getch();
                         exit(1);
                     }
-                    printf("Waiting for other player to set-up his field..");
+                    printf("Waiting for other player to set-up his field..\n");
                     if(recv(newSHandle, (char*)player2_data, sizeof(player2_data), 0)!=SOCKET_ERROR){
                         player2_ship_count = player1_ship_count;
                         for(int i = 0; i < 10; i++){
