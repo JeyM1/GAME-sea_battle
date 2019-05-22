@@ -294,15 +294,15 @@ int shot_analyze(unsigned short position_global, eFieldInfo *field, eFieldInfo *
                 player2_ship_count--;
             else
                 player1_ship_count--;
-            printf("You killed %d-deck ship!\n", ship_size);
+            printf("%s killed %d-deck ship!\n", (player == PLAYER_1 ? "Player 1" : "Player 2"), ship_size);
             Sleep(1000);
             return 1;
         }
-        printf("Hit!\n");
+        printf("%s hit!\n", (player == PLAYER_1 ? "Player 1" : "Player 2"));
         Sleep(1000);
         return 1;
     }
-    printf("Miss!\n");
+    printf("%s miss!\n", (player == PLAYER_1 ? "Player 1" : "Player 2"));
     shot_field[position_y*FIELD_SIZE + position_x] = SHOT;
     Sleep(1000);
     return 0;

@@ -31,7 +31,7 @@
 #define LOG_FILE "logs.txt"
 
 #define SERVER_PORT_NUM 80
-#define SERVER_MAX_CONNECTIONS 2
+#define SERVER_MAX_CONNECTIONS 1
 
 typedef enum {EMPTY=0, SHOT, HIT, KILL, SHIP, EFIELDINFO_END}eFieldInfo;
 typedef enum {INIT=0, DRAW, PROCESSING, EXIT}eGameState;

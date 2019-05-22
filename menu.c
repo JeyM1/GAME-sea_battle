@@ -100,12 +100,6 @@ void main_UI(eMenuState *menu_state, eGameState *game_state, unsigned short *sho
                     printf("Waiting for other player to set-up his field..\n");
                     if(recv(newSHandle, (char*)player2_data, sizeof(player2_data), 0)!=SOCKET_ERROR){
                         player2_ship_count = player1_ship_count;
-                        for(int i = 0; i < 10; i++){
-                            for(int j = 0; j < 10; j++)
-                                printf("%d", player2_data[i*10+j]);
-                            printf("\n");
-                        }
-                        system("pause");
                     }else{
                         getSocketError();
                         closesocket(sHandleClient);
@@ -185,10 +179,10 @@ int set_game_settings(){   //returning 1 if players connected
     bool mode_chosen = false;
     while(!mode_chosen){
         system("cls");
-        printf("=========Game Settings=========\n");
+        printf("======Game Settings======\n");
         printf(" %c Host game\n",   pos%4 == 0 ? TARGET_ICON : ' ');
-        printf(" %c Online game\n",   pos%4 == 1 ? TARGET_ICON : ' ');
-        printf(" %c Local Network\n", pos%4 == 2 ? TARGET_ICON : ' ');
+        printf(" %c Connect to server\n",   pos%4 == 1 ? TARGET_ICON : ' ');
+        printf(" %c Connect to Local host\n", pos%4 == 2 ? TARGET_ICON : ' ');
         printf(" %c Back\n", pos%4 == 3 ? TARGET_ICON : ' ');
         if(get_menu_pos(&pos, 1))
         switch(pos%3)
