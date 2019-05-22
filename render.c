@@ -1,10 +1,16 @@
-//#include "render.h"
 #include "seabattle.h"
 
 extern const char draw_icons[EFIELDINFO_END];
 
+
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: introducing()
+ Synopsis: Function for drawing that cute intro on the beggining :)
+ Returns:  void
+ -----------------------------------------------------------------------[>]-*/
 void introducing(){
+    enum {INTRO_ROW = 5, INTRO_COL = 72};
     const char intro_text[INTRO_ROW][INTRO_COL] = {{" $$$$   $$$$$    $$$$     $$$$$    $$$$   $$$$$$  $$$$$$  $$      $$$$$\n"},
                                                    {"$$      $$      $$  $$    $$  $$  $$  $$    $$      $$    $$      $$   \n"},
                                                    {" $$$$   $$$$    $$$$$$    $$$$$   $$$$$$    $$      $$    $$      $$$$ \n"},
@@ -20,6 +26,11 @@ void introducing(){
     printf("\n\n\n        ");
 }
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: draw_ship_setup_field()
+ Synopsis: Function for drawing player's field in ship_generate_Player()
+ Returns:  void
+ -----------------------------------------------------------------------[>]-*/
 void draw_ship_setup_field(eFieldInfo *ap_data, unsigned short pos, int ship_size, int direction){
     unsigned char x = pos;
     unsigned char y = pos >> 8;
@@ -38,7 +49,6 @@ void draw_ship_setup_field(eFieldInfo *ap_data, unsigned short pos, int ship_siz
                 ship_size--;
                 y++;
                 printf("%c", draw_icons[SHIP]);
-                //доделать!!!! + исправить баг с расстановкой (залазит за поле) (как вариант - начало в центре)
             }else
                 printf("%c", draw_icons[ap_data[i*FIELD_SIZE + j]]);
         }
@@ -47,6 +57,11 @@ void draw_ship_setup_field(eFieldInfo *ap_data, unsigned short pos, int ship_siz
     printf(" *----------*\n");
 }
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: drawfield()
+ Synopsis: Function for drawing player's field in game
+ Returns:  void
+ -----------------------------------------------------------------------[>]-*/
 void drawfield(eFieldInfo *field, eFieldInfo *shot_field, unsigned short target_pos){
     unsigned char target_x = 0;
     unsigned char target_y = 0;
@@ -80,6 +95,11 @@ void drawfield(eFieldInfo *field, eFieldInfo *shot_field, unsigned short target_
 }
 
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: slowprint(int, char*)
+ Synopsis: Function for making smooth effect of printing in console
+ Returns:  void
+ -----------------------------------------------------------------------[>]-*/
 void slowprint(int speed, char *text){
     for(int i=0; i<strlen(text); i++){
         printf("%c", text[i]);
@@ -87,5 +107,4 @@ void slowprint(int speed, char *text){
     }
     Sleep(1000);
 }
-
 //-----------------------------------------------------------------------------

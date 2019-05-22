@@ -9,9 +9,7 @@
 
 #define FIELD_SIZE 10
 
-#define INTRO_ROW 5
-#define INTRO_COL 72
-
+//keyboard keys
 #define ARROW_KEY_PRESSED 0xE0
 #define KEY_ENTER         13
 #define KEY_UP            72
@@ -25,14 +23,17 @@
 #define PLAYER_1 0
 #define PLAYER_2 ~PLAYER_1
 
-#define LOG_FILE "logs.txt"
+#define SERVER 0
+#define CLIENT ~SERVER
+
+#define SERVER_MAX_CONNECTIONS 1
 
 typedef enum {EMPTY=0, SHOT, HIT, KILL, SHIP, EFIELDINFO_END}eFieldInfo;
 typedef enum {INIT=0, DRAW, PROCESSING, EXIT}eGameState;
-typedef enum {MAIN_MENU=0, SETTINGS, CONTROLS, GAME_EXIT, M_MENU_END, GAME_SETTINGS, IN_GAME}eMenuState;
+typedef enum {MAIN_MENU=0, OPTIONS, CONTROLS, GAME_EXIT, M_MENU_END, GAME_SETTINGS, IN_GAME}eMenuState;
 
 //-------------------------------------------------------------------------------------------------
-//-------------RENDERING FUNCTIONS-----------------------------------------------------------------
+//---------------------------------RENDERING FUNCTIONS---------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
 void introducing();
@@ -42,7 +43,7 @@ void slowprint(int, char *);
 
 
 //-------------------------------------------------------------------------------------------------
-//-------------DATA-OPERATING FUNCTIONS------------------------------------------------------------
+//-------------------------------DATA-OPERATING FUNCTIONS------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
 void ship_generate_Player(eFieldInfo *, int *);
@@ -54,7 +55,7 @@ void clearData(eFieldInfo *, eFieldInfo *, eFieldInfo *, eFieldInfo *);
 
 
 //-------------------------------------------------------------------------------------------------
-//---------------------------------MENU------------------------------------------------------------
+//------------------------------------------MENU---------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
 void main_UI(eMenuState *, eGameState *, unsigned short *);
@@ -62,3 +63,16 @@ int main_menu(void);
 int get_menu_pos(int *, int);
 bool choice_yes_no(char *);
 int set_game_settings();
+int set_field_settings(eFieldInfo*, int*);
+void show_controls();
+void options();
+
+//-------------------------------------------------------------------------------------------------
+//-----------------------------------------NETWORK-------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
+void getSocketError();
+int init_server_socket();
+int init_client_socket(char*);
+
+

@@ -1,4 +1,3 @@
-//#include "data.h"
 #include "seabattle.h"
 
 extern FILE *logs;
@@ -7,6 +6,11 @@ extern int player1_ship_count;
 extern int player2_ship_count;
 
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: ship_generate_Player(eFieldInfo*, int*)
+ Synopsis: Function for generating field by player.
+ Returns: void
+ -----------------------------------------------------------------------[>]-*/
 void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
     int ship_size = 4;
     int dir = 0;    //0 for x, 1 for y
@@ -26,9 +30,10 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
         x = pos;
         y = pos >> 8;
         if(temp == 1){
-            //проверка
+            //place check
             switch(dir)
             {
+            //x-direction
             case 0:
                 for(int i=0; i<ship_size; i++){
                     if(ap_data[y*FIELD_SIZE + x+i]                  == SHIP                            ||
@@ -45,18 +50,18 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
                        }
                 }
                 break;
+            //y-direction
             case 1:
                 for(int i=0; i<ship_size; i++){
-                        //make as with x
-                    if(ap_data[(y+i)*FIELD_SIZE + x]               == SHIP                    ||
-                       (ap_data[(y+i)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1)||
-                       (ap_data[(y+i)*FIELD_SIZE + (x-1)]          == SHIP && x!=0)           ||
-                       ap_data[(y+ship_size)*FIELD_SIZE + x]       == SHIP                    ||
-                       (ap_data[(y+ship_size)*FIELD_SIZE + (x+1)]  == SHIP && x!=FIELD_SIZE-1)||
-                       (ap_data[(y+ship_size)*FIELD_SIZE + (x-1)]  == SHIP && x!=0)           ||
-                       ap_data[(y-1)*FIELD_SIZE + x]               == SHIP                    ||
-                       (ap_data[(y-1)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1)||
-                       (ap_data[(y-1)*FIELD_SIZE + (x-1)]          == SHIP && x!=0)){
+                    if(ap_data[(y+i)*FIELD_SIZE + x]               == SHIP                                                 ||
+                       (ap_data[(y+i)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1)                             ||
+                       (ap_data[(y+i)*FIELD_SIZE + (x-1)]          == SHIP && x!=0)                                        ||
+                       (ap_data[(y+ship_size)*FIELD_SIZE + x]      == SHIP && y!=FIELD_SIZE-ship_size)                     ||
+                       (ap_data[(y+ship_size)*FIELD_SIZE + (x+1)]  == SHIP && x!=FIELD_SIZE-1 && y!=FIELD_SIZE-ship_size)  ||
+                       (ap_data[(y+ship_size)*FIELD_SIZE + (x-1)]  == SHIP && x!=0 && y!=FIELD_SIZE-ship_size)             ||
+                       (ap_data[(y-1)*FIELD_SIZE + x]              == SHIP && y!=0)                                        ||
+                       (ap_data[(y-1)*FIELD_SIZE + (x+1)]          == SHIP && x!=FIELD_SIZE-1 && y!=0)                     ||
+                       (ap_data[(y-1)*FIELD_SIZE + (x-1)]          == SHIP && x!=0 && y!=0)){
                         setting_possible = false;
                         break;
                        }
@@ -91,7 +96,6 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
                     break;
                 }
             }else{
-                printf("DEBUG: dir=%d\n", dir);
                 printf("Could not place ship there! Maybe there are another ship(s) around this one\n");
                 system("pause");
             }
@@ -109,12 +113,17 @@ void ship_generate_Player(eFieldInfo *ap_data, int *player_ship_count){
     }
 }
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: ship_generateAI(eFieldInfo*, int*)
+ Synopsis: Function for generating field by algorithm.
+ Returns: void
+ -----------------------------------------------------------------------[>]-*/
 void ship_generateAI(eFieldInfo *ap_data, int *player_ship_count){
     srand(time(NULL));
     int ship_size = 4;
     int ship_count = 0;
     int x, y;
-    int dir; //направление для наращивания
+    int dir; //direction for growing
     bool isSet = false;
     while(!isSet){
         x = rand()%FIELD_SIZE;
@@ -128,7 +137,7 @@ void ship_generateAI(eFieldInfo *ap_data, int *player_ship_count){
         //dir generation
         dir = rand()%4;
 
-        //проверка setting_possible
+        //checking setting_possible
         for(int i=0; i<ship_size; i++){
             if(x<0 || y<0 || x>=FIELD_SIZE || y>=FIELD_SIZE){
                 setting_possible = false;
@@ -163,7 +172,7 @@ void ship_generateAI(eFieldInfo *ap_data, int *player_ship_count){
 
         }
 
-        //если есть возможность, то ставим корабль
+        //setting ship if possible
         if(setting_possible){
             x = temp_x;
             y = temp_y;
@@ -189,7 +198,7 @@ void ship_generateAI(eFieldInfo *ap_data, int *player_ship_count){
                 }
             }
 
-            //проверка на к-во кораблей
+            //checking ships count
             switch(ship_size){
             case 4:
                 ship_count++;
@@ -225,7 +234,14 @@ void ship_generateAI(eFieldInfo *ap_data, int *player_ship_count){
     *player_ship_count = ship_count+1;
 }
 //-----------------------------------------------------------------------------
-int get_target_pos(unsigned short *pp_global, int max_dest_x, int max_dest_y){       //unsigned char *pp_x, unsigned char *pp_y){
+/*----------------------------------------------------------------------[<]-
+ Function: get_target_pos(unsigned short *, int, int)
+ Synopsis: Function for moving players crosshair.
+ Returns: 0 if moved chair, 1 if pressed shot key,
+          2 if pressed destination key
+ -----------------------------------------------------------------------[>]-*/
+int get_target_pos(unsigned short *pp_global, int max_dest_x, int max_dest_y){
+
     unsigned char p_x,p_y;
     p_x = *pp_global;
     p_y = *pp_global >> 8;
@@ -243,7 +259,6 @@ int get_target_pos(unsigned short *pp_global, int max_dest_x, int max_dest_y){  
                     if(p_y < max_dest_y)
                         (p_y)++;
                     break;
-                    //return 0;
                 }
                 case KEY_UP:
                 {
@@ -275,11 +290,16 @@ int get_target_pos(unsigned short *pp_global, int max_dest_x, int max_dest_y){  
     return 0;
 }
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: shot_analyze(unsigned short, eFieldInfo*, eFieldInfo*)
+ Synopsis: Function for analyzing player's 'shot'.
+ Returns: 1 if turn not finished, 0 if finished
+ -----------------------------------------------------------------------[>]-*/
 int shot_analyze(unsigned short position_global, eFieldInfo *field, eFieldInfo *shot_field){
     unsigned char position_x = position_global;
     unsigned char position_y = position_global >> 8;
     int ship_size;
-    //проверка был ли туда уже выстрел??
+    //checking was that place already shoted
     if(shot_field[position_y*FIELD_SIZE + position_x] == HIT || shot_field[position_y*FIELD_SIZE + position_x] == SHOT || shot_field[position_y*FIELD_SIZE + position_x] == KILL){
         printf("You had already shot here!\n");
         Sleep(1000);
@@ -293,20 +313,25 @@ int shot_analyze(unsigned short position_global, eFieldInfo *field, eFieldInfo *
                 player2_ship_count--;
             else
                 player1_ship_count--;
-            printf("You killed %d-deck ship!\n", ship_size);
+            printf("%s killed %d-deck ship!\n", (player == PLAYER_1 ? "Player 1" : "Player 2"), ship_size);
             Sleep(1000);
             return 1;
         }
-        printf("Hit!\n");
+        printf("%s hit!\n", (player == PLAYER_1 ? "Player 1" : "Player 2"));
         Sleep(1000);
         return 1;
     }
-    printf("Miss!\n");
+    printf("%s miss!\n", (player == PLAYER_1 ? "Player 1" : "Player 2"));
     shot_field[position_y*FIELD_SIZE + position_x] = SHOT;
     Sleep(1000);
     return 0;
 }
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: kill_check(unsigned short, eFieldInfo*, eFieldInfo*)
+ Synopsis: Function for checking full 'kill' of ship.
+ Returns: 0 if player hit, ship_size if 'kill'
+ -----------------------------------------------------------------------[>]-*/
 int kill_check(unsigned short position_global, eFieldInfo *field, eFieldInfo *shot_field){
     unsigned char y = position_global >> 8;
     unsigned char y_up = y;
@@ -317,15 +342,8 @@ int kill_check(unsigned short position_global, eFieldInfo *field, eFieldInfo *sh
 
     int dir = 0;
     int ship_size = 1;
-    int error_check = 0;
 
     while(shot_field[y_up*FIELD_SIZE + x] == HIT){        //up
-        if(error_check > 100){
-            fprintf(logs, "Crashed in %s. Checking was going UP.\n", __func__);
-            MessageBoxA(NULL, "Sorry, something went wrong. Please, send me \"logs.txt\" file (it was created in the same directory with \"exe\" file). Thank you for supporting!", "Error", MB_OK | MB_ICONERROR);
-            exit(EXIT_FAILURE);
-        }
-        error_check++;
         if(shot_field[(y_up-1)*FIELD_SIZE + x] == HIT){
             y_up--;
             ship_size++;
@@ -336,12 +354,6 @@ int kill_check(unsigned short position_global, eFieldInfo *field, eFieldInfo *sh
             return 0;
     }
     while(shot_field[y_down*FIELD_SIZE + x] == HIT){        //down
-        if(error_check > 100){
-            fprintf(logs, "Crashed in %s. Checking was going DOWN.\n", __func__);
-            MessageBoxA(NULL, "Sorry, something went wrong. Please, send me \"logs.txt\" file (it was created in the same directory with \"exe\" file). Thank you for supporting!", "Error", MB_OK | MB_ICONERROR);
-            exit(EXIT_FAILURE);
-        }
-        error_check++;
         if(shot_field[(y_down+1)*FIELD_SIZE + x] == HIT){
             y_down++;
             ship_size++;
@@ -352,13 +364,7 @@ int kill_check(unsigned short position_global, eFieldInfo *field, eFieldInfo *sh
             return 0;
     }
     while(shot_field[y*FIELD_SIZE + x_left] == HIT){        //left
-        if(error_check > 100){
-            fprintf(logs, "Crashed in %s. Checking was going DOWN.\n", __func__);
-            MessageBoxA(NULL, "Sorry, something went wrong. Please, send me \"logs.txt\" file (it was created in the same directory with \"exe\" file). Thank you for supporting!", "Error", MB_OK | MB_ICONERROR);
-            exit(EXIT_FAILURE);
-        }
-        error_check++;
-        if(shot_field[y*FIELD_SIZE + (x_left-1)] == HIT){
+        if(x_left != 0 && shot_field[y*FIELD_SIZE + (x_left-1)] == HIT){
             x_left--;
             ship_size++;
             dir = 1;
@@ -368,12 +374,6 @@ int kill_check(unsigned short position_global, eFieldInfo *field, eFieldInfo *sh
             return 0;
     }
     while(shot_field[y*FIELD_SIZE + x_right] == HIT){        //right
-        if(error_check > 100){
-            fprintf(logs, "Crashed in %s. Checking was going DOWN.\n", __func__);
-            MessageBoxA(NULL, "Sorry, something went wrong. Please, send me \"logs.txt\" file (it was created in the same directory with \"exe\" file). Thank you for supporting!", "Error", MB_OK | MB_ICONERROR);
-            exit(EXIT_FAILURE);
-        }
-        error_check++;
         if(shot_field[y*FIELD_SIZE + (x_right+1)] == HIT){
             x_right++;
             ship_size++;
@@ -383,129 +383,129 @@ int kill_check(unsigned short position_global, eFieldInfo *field, eFieldInfo *sh
         }else if(field[y*FIELD_SIZE + (x_right+1)] == SHIP)
             return 0;
     }
-    if(dir == 0){ //берем по y
-        /*printf("DEBUG: x_left = %d, x = %d. Coming on Y\n", x_left, x);
-        getchar();*/
+    //setting field mask
+    if(dir == 0){ //taking on y
         for(int i=0; i<ship_size; i++){
             field[(y_up + i)*FIELD_SIZE + x] = KILL;
             shot_field[(y_up + i)*FIELD_SIZE + x] = KILL;
             //MASK
             if(x == 0 && y_up != 0 && y_down != 9){
-                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //сверху
-                shot_field[(y_up - 1)*FIELD_SIZE + x+1] = SHOT;        //справа сверху
-                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //снизу
-                shot_field[(y_down + 1)*FIELD_SIZE + x+1] = SHOT;      //снизу справа
-                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //справа
+                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //up
+                shot_field[(y_up - 1)*FIELD_SIZE + x+1] = SHOT;        //right up
+                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //down
+                shot_field[(y_down + 1)*FIELD_SIZE + x+1] = SHOT;      //right down
+                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //right
             }else if(x == 9 && y_up != 0 && y_down != 9){
-                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //сверху
-                shot_field[(y_up - 1)*FIELD_SIZE + x-1] = SHOT;        //слева сверху
-                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //снизу
-                shot_field[(y_down + 1)*FIELD_SIZE + x-1] = SHOT;      //снизу слева
-                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //слева
+                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //up
+                shot_field[(y_up - 1)*FIELD_SIZE + x-1] = SHOT;        //left up
+                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //down
+                shot_field[(y_down + 1)*FIELD_SIZE + x-1] = SHOT;      //left down
+                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //left
             }else if(y_up == 0 && x != 0 && x != 9){
-                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //снизу
-                shot_field[(y_down + 1)*FIELD_SIZE + x+1] = SHOT;      //снизу справа
-                shot_field[(y_down + 1)*FIELD_SIZE + x-1] = SHOT;      //снизу слева
-                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //справа
-                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //слева
+                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //left
+                shot_field[(y_down + 1)*FIELD_SIZE + x+1] = SHOT;      //right down
+                shot_field[(y_down + 1)*FIELD_SIZE + x-1] = SHOT;      //left down
+                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //right
+                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //left
             }else if(y_down == 9 && x != 0 && x != 9){
-                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //сверху
-                shot_field[(y_up - 1)*FIELD_SIZE + x+1] = SHOT;        //справа сверху
-                shot_field[(y_up - 1)*FIELD_SIZE + x-1] = SHOT;        //слева сверху
-                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //справа
-                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //слева
+                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //up
+                shot_field[(y_up - 1)*FIELD_SIZE + x+1] = SHOT;        //right up
+                shot_field[(y_up - 1)*FIELD_SIZE + x-1] = SHOT;        //left up
+                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //right
+                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //left
             }else if(y_up == 0 && x == 0){
-                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //снизу
-                shot_field[(y_down + 1)*FIELD_SIZE + x+1] = SHOT;      //снизу справа
-                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //справа
+                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //down
+                shot_field[(y_down + 1)*FIELD_SIZE + x+1] = SHOT;      //right down
+                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //right
             }else if(y_up == 0 && x == 9){
-                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //снизу
-                shot_field[(y_down + 1)*FIELD_SIZE + x-1] = SHOT;      //снизу слева
-                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //слева
+                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //down
+                shot_field[(y_down + 1)*FIELD_SIZE + x-1] = SHOT;      //left down
+                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //left
             }else if(y_down == 9 && x == 0){
-                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //сверху
-                shot_field[(y_up - 1)*FIELD_SIZE + x+1] = SHOT;        //справа сверху
-                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //справа
+                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //up
+                shot_field[(y_up - 1)*FIELD_SIZE + x+1] = SHOT;        //right up
+                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //right
             }else if(y_down == 9 && x == 9){
-                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //сверху
-                shot_field[(y_up - 1)*FIELD_SIZE + x-1] = SHOT;        //слева сверху
-                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //слева
+                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //up
+                shot_field[(y_up - 1)*FIELD_SIZE + x-1] = SHOT;        //left up
+                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //left
             }else{
-                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //сверху
-                shot_field[(y_up - 1)*FIELD_SIZE + x+1] = SHOT;        //справа сверху
-                shot_field[(y_up - 1)*FIELD_SIZE + x-1] = SHOT;        //слева сверху
-                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //снизу
-                shot_field[(y_down + 1)*FIELD_SIZE + x+1] = SHOT;      //снизу справа
-                shot_field[(y_down + 1)*FIELD_SIZE + x-1] = SHOT;      //снизу слева
-                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //справа
-                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //слева
+                shot_field[(y_up - 1)*FIELD_SIZE + x] = SHOT;          //up
+                shot_field[(y_up - 1)*FIELD_SIZE + x+1] = SHOT;        //right up
+                shot_field[(y_up - 1)*FIELD_SIZE + x-1] = SHOT;        //left up
+                shot_field[(y_down + 1)*FIELD_SIZE + x] = SHOT;        //down
+                shot_field[(y_down + 1)*FIELD_SIZE + x+1] = SHOT;      //right down
+                shot_field[(y_down + 1)*FIELD_SIZE + x-1] = SHOT;      //left down
+                shot_field[(y_up + i)*FIELD_SIZE + x+1] = SHOT;        //right
+                shot_field[(y_up + i)*FIELD_SIZE + x-1] = SHOT;        //left
             }
         }
     }
-    if(dir == 1){ //берем по x
-        /*printf("DEBUG: y_up = %d, y = %d. Coming towards x\n", y_up, y);
-        getchar();*/
+    if(dir == 1){ //taking on x
         for(int i=0; i<ship_size; i++){
             field[y*FIELD_SIZE + (x_left+i)] = KILL;
             shot_field[y*FIELD_SIZE + (x_left+i)] = KILL;
             //MASK
             if(y == 0 && x_left != 0 && x_right != 9){
-                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //слева
-                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //справа
-                shot_field[(y+1)*FIELD_SIZE + x_left-1] = SHOT;        //снизу слева
-                shot_field[(y+1)*FIELD_SIZE + x_right+1] = SHOT;       //снизу справа
-                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //снизу
+                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //left
+                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //right
+                shot_field[(y+1)*FIELD_SIZE + x_left-1] = SHOT;        //left down
+                shot_field[(y+1)*FIELD_SIZE + x_right+1] = SHOT;       //right down
+                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //down
             }else if(y == 9 && x_left != 0 && x_right != 9){
-                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //слева
-                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //справа
-                shot_field[(y-1)*FIELD_SIZE + x_left-1] = SHOT;        //сверху слева
-                shot_field[(y-1)*FIELD_SIZE + x_right+1] = SHOT;       //сверху справа
-                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //сверху
+                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //down
+                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //right
+                shot_field[(y-1)*FIELD_SIZE + x_left-1] = SHOT;        //left up
+                shot_field[(y-1)*FIELD_SIZE + x_right+1] = SHOT;       //right up
+                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //up
             }else if(x_left == 0 && y != 0 && y != 9){
-                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //справа
-                shot_field[(y+1)*FIELD_SIZE + x_right+1] = SHOT;       //снизу справа
-                shot_field[(y-1)*FIELD_SIZE + x_right+1] = SHOT;       //сверху справа
-                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //снизу
-                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //сверху
+                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //right
+                shot_field[(y+1)*FIELD_SIZE + x_right+1] = SHOT;       //right down
+                shot_field[(y-1)*FIELD_SIZE + x_right+1] = SHOT;       //right up
+                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //down
+                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //up
             }else if(x_right == 9 && y != 0 && y != 9){
-                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //слева
-                shot_field[(y+1)*FIELD_SIZE + x_left-1] = SHOT;        //снизу слева
-                shot_field[(y-1)*FIELD_SIZE + x_left-1] = SHOT;        //сверху слева
-                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //снизу
-                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //сверху
+                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //left
+                shot_field[(y+1)*FIELD_SIZE + x_left-1] = SHOT;        //left down
+                shot_field[(y-1)*FIELD_SIZE + x_left-1] = SHOT;        //left up
+                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //down
+                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //up
             }else if(y == 0 && x_left == 0){
-                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //справа
-                shot_field[(y+1)*FIELD_SIZE + x_right+1] = SHOT;       //снизу справа
-                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //снизу
+                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //right
+                shot_field[(y+1)*FIELD_SIZE + x_right+1] = SHOT;       //right down
+                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //down
             }else if(y == 0 && x_right == 9){
-                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //слева
-                shot_field[(y+1)*FIELD_SIZE + x_left-1] = SHOT;        //снизу слева
-                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //снизу
+                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //left
+                shot_field[(y+1)*FIELD_SIZE + x_left-1] = SHOT;        //left down
+                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //left
             }else if(y == 9 && x_left == 0){
-                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //справа
-                shot_field[(y-1)*FIELD_SIZE + x_right+1] = SHOT;       //сверху справа
-                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //сверху
+                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //right
+                shot_field[(y-1)*FIELD_SIZE + x_right+1] = SHOT;       //right up
+                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //up
             }else if(y == 9 && x_right == 9){
-                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //слева
-                shot_field[(y-1)*FIELD_SIZE + x_left-1] = SHOT;        //сверху слева
-                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //сверху
+                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //left
+                shot_field[(y-1)*FIELD_SIZE + x_left-1] = SHOT;        //left up
+                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //up
             }else{
-                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //слева
-                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //справа
-                shot_field[(y+1)*FIELD_SIZE + x_left-1] = SHOT;        //снизу слева
-                shot_field[(y+1)*FIELD_SIZE + x_right+1] = SHOT;       //снизу справа
-                shot_field[(y-1)*FIELD_SIZE + x_left-1] = SHOT;        //сверху слева
-                shot_field[(y-1)*FIELD_SIZE + x_right+1] = SHOT;       //сверху справа
-                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //снизу
-                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //сверху
+                shot_field[y*FIELD_SIZE + x_left-1] = SHOT;            //left
+                shot_field[y*FIELD_SIZE + x_right+1] = SHOT;           //right
+                shot_field[(y+1)*FIELD_SIZE + x_left-1] = SHOT;        //left down
+                shot_field[(y+1)*FIELD_SIZE + x_right+1] = SHOT;       //right down
+                shot_field[(y-1)*FIELD_SIZE + x_left-1] = SHOT;        //left up
+                shot_field[(y-1)*FIELD_SIZE + x_right+1] = SHOT;       //right up
+                shot_field[(y+1)*FIELD_SIZE + x_left + i] = SHOT;      //down
+                shot_field[(y-1)*FIELD_SIZE + x_left + i] = SHOT;      //up
             }
         }
     }
-    /*printf("DEBUG: ship_size = %d\n",ship_size);
-    getchar();*/
     return ship_size;
 }
 //-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------[<]-
+ Function: clearData(eFieldInfo*, eFieldInfo*, eFieldInfo*, eFieldInfo*)
+ Synopsis: Function for clearing all player's arrays.
+ Returns: void
+ -----------------------------------------------------------------------[>]-*/
 void clearData(eFieldInfo *field1, eFieldInfo *field2, eFieldInfo *shot_field1, eFieldInfo *shot_field2){
     for(int i=0; i<FIELD_SIZE*FIELD_SIZE; i++){
         field1[i] = EMPTY;
