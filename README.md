@@ -1,3 +1,2 @@
 # GAME-sea_battle
-WIP.
-Just another university project.
+Console-based sea-battle game with networking.
