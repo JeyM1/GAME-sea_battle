@@ -211,28 +211,27 @@ int set_game_settings() {
 		printf(" %c Connect to server\n", pos % 4 == 1 ? TARGET_ICON : ' ');
 		printf(" %c Connect to Local host\n", pos % 4 == 2 ? TARGET_ICON : ' ');
 		printf(" %c Back\n", pos % 4 == 3 ? TARGET_ICON : ' ');
-		if (get_menu_pos(&pos, 3))
+		if (get_menu_pos(&pos, 3)) {
 			switch (pos % 4) {
 			case 0:  // init server
 				status = init_server_socket();
 				net_player = SERVER;
-				system("cls");
 				break;
 			case 1:
 				printf("\nEnter IP address: ");
 				fgets(server_name, sizeof(server_name), stdin);
 				status = init_client_socket(server_name);
 				net_player = CLIENT;
-				mode_chosen = true;
 				break;
 			case 2:
 				status = init_client_socket("127.0.0.1");
 				net_player = CLIENT;
-				mode_chosen = true;
 				break;
 			case 3:
 				return 0;
 			}
+			mode_chosen = true;
+		}
 	}
 	return status;
 }
